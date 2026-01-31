@@ -17,10 +17,10 @@ Data.visual_graph = 0; % 1 if you want the plot of u_h and u_ex together
 Data.calc_errors = 1;  % 1 if you want to calc many for h and compute errors
                        % 0 if you whant to calc for single h and NO errors
                        % graphs
-Data.save_sol_images = 0;  % 1 if you whant to save the sol plot
+Data.save_sol_images = 1;  % 1 if you whant to save the sol plot
 
 %% number of element definition
-nEl = 20;                                       % Single sol calculation
+nEl = 80;                                       % Single sol calculation
 
 nEl_min   = 1;         % coarsest mesh
 nEl_max   = 1000;     % finest mesh

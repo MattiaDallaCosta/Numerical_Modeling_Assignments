@@ -37,9 +37,9 @@ u_g = sparse(ndof,1);
 % end
 
 if(strcmp(Data.boundary(1),'N') || strcmp(Data.boundary(2),'R'))
-    b(1) = b(1) + Data.gN1(Data.omega,Data.ro(Data.boundary(2)),Data.vel);
-    b(end) = b(end) + 1i * Data.omega * Data.gR2(Data.omega,Data.ro(Data.boundary(2)),Data.vel) * sqrt(Data.ro(Data.boundary(2)) * Data.mu(Data.boundary(2)));
-    A(end,end) = A(end,end)+1i*Data.omega*sqrt(Data.ro(Data.boundary(2)) * Data.mu(Data.boundary(2)));
+    b(1) = b(1) + Data.gN1(Data.omega,Data.ro(Data.domain(2)),Data.vel);
+    b(end) = b(end) + 1i * Data.omega * Data.gR2(Data.omega,Data.ro(Data.domain(2)),Data.vel) * sqrt(Data.ro(Data.domain(2)) * Data.mu(Data.domain(2)));
+    A(end,end) = A(end,end)+1i*Data.omega*sqrt(Data.ro(Data.domain(2)) * Data.mu(Data.domain(2)));
 end
 
 

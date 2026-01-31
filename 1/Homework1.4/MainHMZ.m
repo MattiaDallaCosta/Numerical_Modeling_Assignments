@@ -45,16 +45,18 @@ fprintf(['Solving test ', Data.name, ' with ',num2str(nEl),' elements \n']);
 % SOLVE LINEAR SYSTEM - COMPUTE BOUNDARY CONDITIONS
 %==========================================================================
 
-% Apply BC to b and A:
+% Apply BC to b and A: 
 [A,b] = BoundaryConditions(A_nbc,b_nbc,Femregion,Data);
-M_nbc(end,end) =1;
+% Observe: we are neglecting 1 dof due to Dirichlet BC at right boundary.
+% Indeed the last equation of this system must be u_N_h = 0. To do so we
+% impose:
+M_nbc(end,end) =0;
 M_nbc(end,end-1) =0;
 M_nbc(end-1,end) =0;
-A(end,end) = 0;
+A(end,end) = 1;
 A(end-1,end) = 0;
 A(end,end-1) = 0;
-% M_nbc = M_nbc(1:nEl,1:nEl);
-% A = A(1:nEl,1:nEl);
+
 if (Data.plot_matrixes)
     % Print the matrices
     fprintf('\n===============================\n');
@@ -83,9 +85,8 @@ end
 % DISPERSION DATA
 %==========================================================================
 [V,D] = eigs(A, M_nbc, nmodes, 'sm');  % smallest eigenvalues
-
-lambda_h = diag(D);
-omega_h  = sqrt(lambda_h);
+omega_h_squared = diag(D);
+omega_h  = sqrt(omega_h_squared);
 k_h = omega_h / Data.vel;
 
 h_lambda = (Data.boundary(1)/nEl) * k_exact / (2*pi);

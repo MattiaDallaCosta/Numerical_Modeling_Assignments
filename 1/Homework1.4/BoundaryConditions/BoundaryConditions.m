@@ -38,6 +38,7 @@ u_g = sparse(ndof,1);
 
 if(strcmp(Data.boundary(1),'N') || strcmp(Data.boundary(2),'D'))
     A(end,end) = A(end,end)+Data.mu/femregion.h; 
+    A(end,end) = 1;
 end
 
 

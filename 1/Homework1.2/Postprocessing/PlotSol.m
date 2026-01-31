@@ -19,18 +19,18 @@ x = linspace(Data.domain(1),Data.domain(2),1000);
 nEl_calc = (Data.domain(2) - Data.domain(1))/femregion.h;
 
 figure;
-plot(x_h, uh_full, '-o', 'LineWidth', 1.5); hold on;
+plot(x_h, uh_full, '-o', 'LineWidth', 1.8); hold on;
 
 % Evaluate exact solution at the DOFs
 uex_full = Data.uex(x, Data.omega, Data.ro, Data.vel);
-plot(x, uex_full, '--', 'LineWidth', 1.5);
+plot(x, uex_full, '--', 'LineWidth', 1.8);
 
 grid on;
-legend('u_h (numerical)', 'u (exact)', 'Location', 'best');
+legend('u_h (numerical)', 'u (exact)', 'Location', 'best', fontsize=18);
 
-title(sprintf('u_h solution for h = %g and nEl = %g', femregion.h, nEl_calc));
-xlabel('x');
-ylabel('u(x)');
+title(sprintf('u_h solution for h = %g and nEl = %g', femregion.h, nEl_calc), fontsize=17);
+xlabel('x', fontsize=17);
+ylabel('u(x)', fontsize=17);
 
 if (Data.save_sol_images)
     filename = sprintf('solution2_nEL_%g.png', nEl_calc);

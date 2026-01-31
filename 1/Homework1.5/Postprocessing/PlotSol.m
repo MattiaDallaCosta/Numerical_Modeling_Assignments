@@ -46,35 +46,35 @@ end
 % PLOT OF NUMERICAL SOLUTION VS EXACT
 x = linspace(Data.domain(1),Data.domain(2),1000);
 uex_full = Data.uex(x, Data.omega, Data.ro, Data.vel);
-uex_fullOld = Data.uexOld(x, Data.omega, Data.ro, Data.vel);
 
 figure;
 
 % ----- SUBPLOT 1: magnitude -----
 subplot(2,1,1);
-plot(x_h, abs(uh_full), '-o', 'LineWidth', 1.5); hold on;
-plot(x, abs(uex_full), '--', 'LineWidth', 1.5); hold on;
-plot(x, abs(uex_fullOld), '--', 'LineWidth', 1.5);
-xlim([0 1.5]);
-hold on;
-plot(x, abs(uex_full), '--', 'LineWidth', 1.5);
+plot(x_h, abs(uh_full), '-o', 'LineWidth', 1.8); hold on;
+plot(x, abs(uex_full), '--', 'LineWidth', 1.8); hold on;
+%plot(x, abs(uex_fullOld), '--', 'LineWidth', 1.5);
+xlim([0 1]);
+%hold on;
+%plot(x, abs(uex_full), '--', 'LineWidth', 1.5);
 grid on;
-ylabel('|u_h(x)|');
-legend('u_h (numerical)', 'u (exact)', 'u (exact - no PML)', 'Location', 'best');
-title(sprintf('Magnitude of u_h (h = %g,  nEl = %g)', femregion.h, nEl_calc));
+ylabel('|u_h(x)|', FontSize=17);
+xlabel('x',FontSize=17);
+legend('u_h (numerical)', 'u (exact)', 'Location', 'best',FontSize=18);
+title(sprintf('Magnitude of u_h (h = %g,  nEl = %g)', femregion.h, nEl_calc),FontSize=18);
 
 % ----- SUBPLOT 2: phase -----
 subplot(2,1,2);
 plot(x_h, angle(uh_full), '-o', 'LineWidth', 1.5);hold on;
 plot(x, angle(uex_full), '--', 'LineWidth', 1.5); hold on;
-plot(x, angle(uex_fullOld), '--', 'LineWidth', 1.5);
-xlim([0 1.5]);
+%plot(x, angle(uex_fullOld), '--', 'LineWidth', 1.5);
+xlim([0 1]);
 grid on;
-ylabel('angle(u_h(x))');
-xlabel('x');
-title('Phase of u_h');
-legend('u_h (numerical)', 'u (exact)', 'u (exact - no PML)', 'Location', 'best');
-title(sprintf('Phase of u_h (h = %g,  nEl = %g)', femregion.h, nEl_calc));
+ylabel('angle(u_h(x))',FontSize=17);
+xlabel('x',FontSize=17);
+title('Phase of u_h',FontSize=18);
+legend('u_h (numerical)', 'u (exact)', 'Location', 'best',FontSize=18);
+title(sprintf('Phase of u_h (h = %g,  nEl = %g)', femregion.h, nEl_calc),FontSize=18);
 
 % ----- SAVE IMAGE -----
 if Data.save_sol_images

@@ -2,7 +2,7 @@
 
 function [Data] = DataTest(TestName)
 
-if strcmp(TestName,'Homework1Point2')
+if strcmp(TestName,'Homework1Point3')
     
     % Data name
     Data.name    = TestName;
@@ -46,8 +46,3 @@ if strcmp(TestName,'Homework1Point2')
 
     Data.graduex = @(x,omega,ro,vel) 0.*x;
 end
-
-           
-
-
-

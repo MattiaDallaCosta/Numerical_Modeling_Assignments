@@ -41,11 +41,11 @@ rateL2 = pfitL2(1);
 legend( ...
     sprintf('C h^{%d}', pL2), ...
     sprintf('||u - u_h||_{L^2}, rate ≈ %.2f', rateL2), ...
-    'Location', 'best');
+    'Location', 'best', fontsize=18);
 
-ylabel('L^2-error');
-xlabel('h');
-title('L^2 error vs h');
+ylabel('L^2-error', fontsize=17);
+xlabel('h', fontsize=17);
+title('L^2 error vs h', fontsize=18);
 hs1.FontSize = 12;
 
 %---------------------- H1 error ----------------------%
