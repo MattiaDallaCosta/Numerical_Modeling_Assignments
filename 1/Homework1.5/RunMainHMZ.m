@@ -10,7 +10,8 @@ addpath Postprocessing
 
 
 %% Data for Test: save the data of the problem.
-Data = DataTest('Homework1Point2');
+%Data = DataTest('Homework1Point5First');
+Data = DataTest('Homework1Point5Second');
 
 %% Options
 Data.visual_graph = 1;      % 1 if you want the plot of u_h and u_ex together
