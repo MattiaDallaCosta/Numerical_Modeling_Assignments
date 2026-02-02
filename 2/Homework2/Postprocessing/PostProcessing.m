@@ -17,10 +17,10 @@ end
 eta_ex_T = [];
 q_ex_T   = [];
 if isfield(Data,'etaex') && isa(Data.etaex,'function_handle')
-    eta_ex_T = Data.etaex(x, Data.T);
+    eta_ex_T = Data.etaex(x, Data.PicTime);
 end
 if isfield(Data,'qex') && isa(Data.qex,'function_handle')
-    q_ex_T = Data.qex(x, Data.T);
+    q_ex_T = Data.qex(x, Data.PicTime);
 end
 
 % Plot final time
@@ -28,16 +28,24 @@ if Data.visual_graph
     figure(2); clf;
 
     subplot(2,1,1);
-    plot(x, full(eta_h_T), 'LineWidth', 1.5); hold on;
-    if ~isempty(eta_ex_T), plot(x, eta_ex_T, '--', 'LineWidth', 1.5); end
-    title('\eta at final time T'); xlabel('x'); ylabel('\eta');
+    plot(x, full(eta_h_T), 'LineWidth', 1.8); hold on;
+    if ~isempty(eta_ex_T), plot(x, eta_ex_T, '--', 'LineWidth', 1.8); end
+    title(sprintf('\\eta at time %.1f s', Data.PicTime), 'FontSize', 18);
+    xlabel('x', fontsize=17); ylabel('\eta', fontsize=17);
     if ~isempty(eta_ex_T), legend('\eta_h','\eta_{ex}','Location','best'); end
 
     subplot(2,1,2);
-    plot(x, full(q_h_T), 'LineWidth', 1.5); hold on;
-    if ~isempty(q_ex_T), plot(x, q_ex_T, '--', 'LineWidth', 1.5); end
-    title('q at final time T'); xlabel('x'); ylabel('q');
-    if ~isempty(q_ex_T), legend('q_h','q_{ex}','Location','best'); end
+    plot(x, full(q_h_T), 'LineWidth', 1.8); hold on;
+    if ~isempty(q_ex_T), plot(x, q_ex_T, '--', 'LineWidth', 1.8); end
+    title(sprintf('q at time %.1f s', Data.PicTime), 'FontSize', 18);
+
+    xlabel('x', fontsize=17); ylabel('q', fontsize=17);
+    if ~isempty(q_ex_T), legend('q_h','q_{ex}','Location','best', fontsize=18); end
+
+    if (Data.save_sol_images)
+        filename = sprintf('%s_nEL_%g_p_%g_dt_%g_t_%g.png', Data.name, femregion.ne, Data.p, Data.dt, Data.PicTime);
+        exportgraphics(gcf, fullfile('Plots', filename), 'Resolution', 300);
+    end
 end
 
 % Save

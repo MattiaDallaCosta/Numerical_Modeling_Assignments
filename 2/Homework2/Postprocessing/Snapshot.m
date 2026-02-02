@@ -57,4 +57,5 @@ xlabel('x'); ylabel('q');
 axis([x1, x2, m2-pad2, M2+pad2]);
 
 drawnow;
+pause(0.000000000002);
 end
