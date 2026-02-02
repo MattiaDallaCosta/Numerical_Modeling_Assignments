@@ -64,21 +64,24 @@ for t = time
         f(iglo,i) = f(iglo,i) + load;
     end
     
-    if(strcmp(Data.boundary(1),'N')) %|| strcmp(Data.boundary(1),'R') || strcmp(Data.boundary(1),'I'))
-        f(1,i) = f(1,i) - Data.gN1(t);
-    elseif(strcmp(Data.boundary(1),'R'))
-        f(1,i) = f(1,i) - Data.gR1(t);
-    elseif(strcmp(Data.boundary(1),'A'))
-        f(1,i) = f(1,i) + Data.mu/Data.c*Data.gI1(t);
-    end
-    if(strcmp(Data.boundary(2),'N')) %|| strcmp(Data.boundary(2),'R') || strcmp(Data.boundary(2),'I'))
-        f(end,i) = f(end,i) + Data.gN2(t);
-    elseif(strcmp(Data.boundary(2),'R'))    
-        f(end,i) = f(end,i) + Data.gR2(t);
-    elseif(strcmp(Data.boundary(1),'A'))
-        f(end,i) = f(end,i) + Data.mu/Data.c*Data.gI2(t);
-    end
-    
+    % if(strcmp(Data.boundary(1),'N')) %|| strcmp(Data.boundary(1),'R') || strcmp(Data.boundary(1),'I'))
+    %     f(1,i) = f(1,i) - Data.gN1(t);
+    % elseif(strcmp(Data.boundary(1),'R'))
+    %     f(1,i) = f(1,i) - Data.gR1(t);
+    % elseif(strcmp(Data.boundary(1),'A'))
+    %     f(1,i) = f(1,i) + Data.mu/Data.c*Data.gI1(t);
+    % end
+    % if(strcmp(Data.boundary(2),'N')) %|| strcmp(Data.boundary(2),'R') || strcmp(Data.boundary(2),'I'))
+    %     f(end,i) = f(end,i) + Data.gN2(t);
+    % elseif(strcmp(Data.boundary(2),'R'))    
+    %     f(end,i) = f(end,i) + Data.gR2(t);
+    % elseif(strcmp(Data.boundary(1),'A'))
+    %     f(end,i) = f(end,i) + Data.mu/Data.c*Data.gI2(t);
+    % elseif strcmp(Data.boundary,'PP')
+    %     f(1,i) = f(1,i) + f(end,i);
+    %     f(end,i) = 0;
+    % end
+    % 
     i = i + 1;
     
     

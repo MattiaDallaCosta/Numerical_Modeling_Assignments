@@ -1,5 +1,5 @@
-function [A,M]=Matrix1D(Data,femregion)
-%% [A,M] = Matrix1D(Data,Femregion)
+function [D,M]=Matrix1D(Data,femregion)
+%% [D,M] = Matrix1D(Data,Femregion)
 %==========================================================================
 % Assembly of the stiffness matrices A and rhs f
 %==========================================================================
@@ -10,7 +10,7 @@ function [A,M]=Matrix1D(Data,femregion)
 %          femregion   : (struct)  see CreateFemregion.m
 %
 %    OUTPUT:
-%          A           : (sparse(ndof,ndof) real) stiffnes matrix
+%          D           : (sparse(ndof,ndof) real) weak derivative matrix
 %          M           : (sparse(ndof,ndof) real) mass matrix
 
 
@@ -33,48 +33,41 @@ connectivity = femregion.connectivity; % connectivity matrix
 % evaluation of shape bases on quadrature nodes
 % [Phi,GradPhi] = EvalShapeBasis(basis,nodes_1D);
 
-% quadrature nodes and weights for integrals
+% Returns LGL nodes and weights on the reference element
 [nodes_1D,w_1D] = xwlgl(nln);
 
-% evaluation of shape bases on quadrature nodes
+% Evaluation of shape bases and their derivative on quadrature nodes
 [Phi,GradPhi] = basis_and_der_at_lgl(nodes_1D,nln);
 
 
 
 % Assembly begin ...
-A = sparse(ndof,ndof);  % Global Stiffness matrix
+D = sparse(ndof,ndof);  % Global Stiffness matrix
 M = sparse(ndof,ndof);  % Global mass matrix
 
 for ie = 1 : ne
      
     % Local to global map --> To be used in the assembly phase
     iglo = connectivity(1:nln,ie);
-  
+    
+    % Compute the Jacobian
     [BJ, ~] = GetJacobian(femregion.coord(iglo,:), nodes_1D);
     % BJ        = Jacobian of the elemental map 
     % pphys_1D  = vertex coordinates in the physical domain 
    
     %=============================================================%
-    % STIFFNESS MATRIX
-    %=============================================================%
-    
-    % Local stiffness matrix (phi',phi')
-    [A_loc] = Stiffness(GradPhi, w_1D, nln, BJ);
-
-    % Assembly phase for stiffness matrix
-    A(iglo,iglo) = A(iglo,iglo) + Data.mu*A_loc; 
-    
-    %=============================================================%
     % MASS MATRIX
     %=============================================================%
-    
-    % Local mass matrix (phi,phi)
-    [M_loc] = Mass(Phi, w_1D, nln, BJ);
+    % M_ij = ∫ phi_i * phi_j dx
+    M_loc = Mass(Phi, w_1D, nln, BJ);
+    M(iglo, iglo) = M(iglo, iglo) + M_loc;
 
-    % Assembly phase for mass matrix
-    M(iglo,iglo) = M(iglo,iglo) + Data.ro*M_loc;   
-
-
+    %=============================================================%
+    % WEAK DERIVATIVE MATRIX
+    %=============================================================%
+    % D_ij = ∫ phi_j * (phi_i)_x dx
+    D_loc = D_matrix(Phi, GradPhi, w_1D, nln, BJ);
+    D(iglo, iglo) = D(iglo, iglo) + D_loc;
 end
 
 

@@ -14,9 +14,10 @@ function [femregion] = CreateFemregion(Data,Region)
 
 fprintf('Creating finite element space ... \n');
 
-
+% Nomber of local nodes per element
 nln = Data.p + 1;
-        
+
+% Find boundary points selecting the ones closer to the domain boundary def
 bound_pts = ones(length(Region.coord),1);
 bound_pts = find((abs(Region.coord(:,1) - Data.domain(1,1)) < 1.e-5) ...
     | (abs(Region.coord(:,1) - Data.domain(1,2)) < 1.e-5));
