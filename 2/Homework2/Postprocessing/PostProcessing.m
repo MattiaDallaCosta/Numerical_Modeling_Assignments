@@ -32,7 +32,7 @@ if Data.visual_graph
     if ~isempty(eta_ex_T), plot(x, eta_ex_T, '--', 'LineWidth', 1.8); end
     title(sprintf('\\eta at time %.1f s', Data.PicTime), 'FontSize', 18);
     xlabel('x', fontsize=17); ylabel('\eta', fontsize=17);
-    if ~isempty(eta_ex_T), legend('\eta_h','\eta_{ex}','Location','best'); end
+    if ~isempty(eta_ex_T), legend('\eta_h','\eta_{ex}','Location','best', fontsize=18); end
 
     subplot(2,1,2);
     plot(x, full(q_h_T), 'LineWidth', 1.8); hold on;

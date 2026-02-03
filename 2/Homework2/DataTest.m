@@ -20,7 +20,7 @@ if strcmp(TestName,'Homework2.4')
     Data.boundary = 'PP';
 
     % Final time and time step
-    Data.T  = 1;
+    Data.T  = 0.5;
     Data.dt = 0.0001;
 
     % Parameters
@@ -63,7 +63,7 @@ elseif strcmp(TestName,'Homework2.5_1')
     Data.boundary = 'RW';
 
     % Final time and time step
-    Data.T  = 1;
+    Data.T  = 0.5;
     Data.dt = 0.0001;
 
     % Polynomial degree
@@ -79,7 +79,7 @@ elseif strcmp(TestName,'Homework2.5_1')
 
     % Initial conditions (same pulse, right-going initially)
     Data.eta0 = @(x) exp(-50*(x-0.5).^2);
-    Data.q0   = @(x) Data.c * Data.eta0(x);
+    Data.q0   = @(x) 0.*x;
 
     % No simple traveling-wave exact solution with reflecting walls:
     Data.etaex     = [];
@@ -108,9 +108,10 @@ elseif strcmp(TestName,'Homework2.5_2')
     % Boundary conditions: periodic in x
     % D = Dirichlet; P = periodic;
     Data.boundary = 'PP';
+    %Data.boundary = 'RW';
 
     % Final time and time step
-    Data.T  = 1;
+    Data.T  = 0.5;
     Data.dt = 0.0001;
 
     % --- Parameters to match eta_tt = gH eta_xx ---
@@ -133,6 +134,7 @@ elseif strcmp(TestName,'Homework2.5_2')
     % Initial conditions
     Data.eta0 = @(x) exp(-50*(x-0.5).^2);
     Data.q0   = @(x) Data.c * Data.eta0(x);
+    %Data.q0   = @(x) 0.*x;
 
     % Exact solution requested: eta(x,t) = eta(x - c t, 0)
     % For periodic domain, wrap x-ct into [0,L)
