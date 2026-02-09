@@ -29,24 +29,33 @@ refH1 = C_H1 * hVec.^pH1;
 figure;
 
 %---------------------- L2 error ----------------------%
-%hs1 = subplot(2,1,1);
-loglog(hVec, refL2, '-+b', 'LineWidth', 2); hold on;
-loglog(hVec, eVecL2, '-or', 'LineWidth', 2);
+loglog(hVec, refL2, '-+b', 'LineWidth', 1.8); hold on;
+loglog(hVec, eVecL2, '-or', 'LineWidth', 1.8);
 grid on;
 
-% optional: fit experimental slope
+% Experimental slope
 pfitL2 = polyfit(log(hVec), log(eVecL2), 1);
 rateL2 = pfitL2(1);
 
-legend( ...
-    sprintf('C h^{%d}', pL2), ...
-    sprintf('||u - u_h||_{L^2}, rate ≈ %.2f', rateL2), ...
-    'Location', 'best', fontsize=18);
+fs = 25;   % same as reference figure
 
-ylabel('L^2-error', fontsize=17);
-xlabel('h', fontsize=17);
-title('L^2 error vs h', fontsize=18);
-hs1.FontSize = 12;
+legend({ ...
+    '$C h^2$', ...
+    sprintf('$\\|u-u_h\\|_{L^2}\\approx h^{%.2f}$', rateL2)}, ...
+    'Interpreter','latex', ...
+    'Location','best', ...
+    'FontName','Times New Roman', ...
+    'FontSize',fs);
+
+xlabel('$h$', ...
+       'Interpreter','latex', ...
+       'FontName','Times New Roman', ...
+       'FontSize',fs);
+
+ylabel('$\|u - u_h\|_{L^2}$', 'Interpreter','latex', 'FontName','Times New Roman', 'FontSize',fs);
+title('Convergence in the $L^2$ norm', 'Interpreter','latex', 'FontName','Times New Roman', 'FontSize',fs);
+
+
 
 %---------------------- H1 error ----------------------%
 % hs2 = subplot(2,1,2);
@@ -67,6 +76,5 @@ hs1.FontSize = 12;
 % title('H^1 error vs h');
 % hs2.FontSize = 12;
 
-exportgraphics(gcf, fullfile('Plots', 'Error.png'), 'Resolution', 300);
-
+exportgraphics(gcf, fullfile('Plots', 'Error.pdf'), 'ContentType','vector');
 end

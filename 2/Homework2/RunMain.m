@@ -11,8 +11,8 @@ addpath SemLib
 
 
 %% Data for Test
-%Data = DataTest('Homework2.4');
-Data = DataTest('Homework2.5_1');
+Data = DataTest('Homework2.4');
+%Data = DataTest('Homework2.5_1');
 %Data = DataTest('Homework2.5_2');
 
 % Polynomial degree 
@@ -32,7 +32,7 @@ end
 
 % The following is both the time at which shows the sol and computes the
 % error
-Data.PicTime = 0.2;
+Data.PicTime = 0.5;
 
 %% No error case
 % Input: Data and number of elements

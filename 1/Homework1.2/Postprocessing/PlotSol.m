@@ -26,14 +26,30 @@ uex_full = Data.uex(x, Data.omega, Data.ro, Data.vel);
 plot(x, uex_full, '--', 'LineWidth', 1.8);
 
 grid on;
-legend('u_h (numerical)', 'u (exact)', 'Location', 'best', fontsize=18);
 
-title(sprintf('u_h solution for h = %g and nEl = %g', femregion.h, nEl_calc), fontsize=17);
-xlabel('x', fontsize=17);
-ylabel('u(x)', fontsize=17);
+fs = 25;   % tuned for 0.45\linewidth inclusion
 
-if (Data.save_sol_images)
-    filename = sprintf('solution2_nEL_%g.png', nEl_calc);
-    exportgraphics(gcf, fullfile('Plots', filename), 'Resolution', 300);
+legend({'$u_h$ (numerical)', '$u$ (exact)'}, ...
+       'Interpreter','latex', ...
+       'Location','best', ...
+       'FontName','Times New Roman', ...
+       'FontSize',fs);
+
+title(sprintf('u_h solution for h = %g and nEl = %g', ...
+      femregion.h, nEl_calc), ...
+      'FontName','Times New Roman', ...
+      'FontSize',fs);
+
+xlabel('x', 'FontName','Times New Roman', 'FontSize',fs);
+ylabel('u(x)', 'FontName','Times New Roman', 'FontSize',fs);
+
+% if (Data.save_sol_images)
+%     filename = sprintf('solution2_nEL_%g.png', nEl_calc);
+%     exportgraphics(gcf, fullfile('Plots', filename), 'Resolution', 300);
+% end
+if Data.save_sol_images
+    filename = sprintf('solution2_nEL_%d.pdf', nEl_calc);
+    exportgraphics(gcf, fullfile('Plots', filename), ...
+                   'ContentType','vector');
 end
 end

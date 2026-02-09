@@ -21,7 +21,7 @@ if strcmp(TestName,'Homework2.4')
 
     % Final time and time step
     Data.T  = 0.5;
-    Data.dt = 0.0001;
+    Data.dt = 0.00001;
 
     % Parameters
     Data.g  = 9.81;

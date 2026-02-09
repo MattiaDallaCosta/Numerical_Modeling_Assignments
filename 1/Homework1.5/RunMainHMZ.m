@@ -10,8 +10,8 @@ addpath Postprocessing
 
 
 %% Data for Test: save the data of the problem.
-%Data = DataTest('Homework1Point5First');
-Data = DataTest('Homework1Point5Second');
+Data = DataTest('Homework1Point5First');
+%Data = DataTest('Homework1Point5Second');
 
 %% Options
 Data.visual_graph = 1;      % 1 if you want the plot of u_h and u_ex together
@@ -21,7 +21,7 @@ Data.calc_errors = 0;       % 1 if you want to calc many h and compute errors
 Data.save_sol_images = 1;   % 1 if you whant to save the sol plot
 
 %% number of element definition
-nEl = 2000;                                       % Single sol calculation
+nEl = 150;                                       % Single sol calculation
 nEl_vec = [1 10 20 30 40 50 60 70 80 80 100 200 1000];   % for many h
 
 %% Main routine
