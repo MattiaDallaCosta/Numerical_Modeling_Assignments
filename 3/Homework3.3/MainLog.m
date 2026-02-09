@@ -12,9 +12,9 @@ clearvars; clc; close all;
 
 %% Outputs
 OverlayPlots = 0; % Plot overlay
-HeatmapPlots = 0;
+HeatmapPlots = 1;
 ConvergencePlots = 0;
-VideoSol = 1;
+VideoSol = 0;
 
 %% GLOBAL PARAMETERS
 g   = 9.81;
@@ -26,7 +26,7 @@ T   = 1;
 % ---- LOG-PRESSURE PARAMETER ----
 % h_ref must satisfy: 1 + log(h/h_ref) > 0 for all h in the simulation,
 % i.e. h_ref < h_min * e.  With h_min = 0.1 (smallest IC), h_ref < 0.272.
-h_ref = 0.05;
+h_ref = 0.0;
 
 % Spatial discretization
 Delta_x = L / N;
