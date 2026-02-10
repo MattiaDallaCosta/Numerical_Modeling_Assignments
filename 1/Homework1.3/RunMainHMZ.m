@@ -20,7 +20,7 @@ Data.calc_errors = 0;  % 1 if you want to calc many for h and compute errors
 Data.save_sol_images = 1;  % 1 if you whant to save the sol plot
 
 %% number of element definition
-nEl = 200;                                       % Single sol calculation
+nEl = 25;                                       % Single sol calculation
 nEl_vec = [1 10 20 30 40 50 60 70 80 80 100 200 1000];   % for many h
 
 %% Main routine

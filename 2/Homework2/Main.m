@@ -241,87 +241,85 @@ end
 Solutions = PostProcessing(Data, Femregion, eta_snap(:,round(Data.PicTime/Data.dt)), q_snap(:,round(Data.PicTime/Data.dt)));
 
 % Surface plots
-if Data.surf
-    time = 0:Data.dt:Data.T;
+fs         = 35;
+lw         = 1.9;
+fnt        = 'Times New Roman';
+interp_tex = 'latex';
 
-    % x coords consistent with reduced solution length
-    x = Femregion.coord(:,1);
+clr = [ ...
+    0.00  0.45  0.74;   %  1  blue
+    0.85  0.33  0.10;   %  2  orange
+    0.47  0.67  0.19;   %  3  green
+    0.49  0.18  0.56;   %  4  purple
+    0.93  0.69  0.13;   %  5  yellow
+    0.30  0.75  0.93;   %  6  cyan
+    0.64  0.08  0.18;   %  7  dark red
+    0.25  0.25  0.25;   %  8  dark gray
+    0.00  0.60  0.50;   %  9  teal
+    0.75  0.00  0.75;   % 10  magenta
+    0.60  0.60  0.60];  % 11  light gray
+
+if Data.surf
+
+    time = 0:Data.dt:Data.T;
+    x    = Femregion.coord(:,1);
     if length(x) ~= size(eta_snap,1)
         x = x(1:size(eta_snap,1));
     end
 
-    [tt,xx] = meshgrid(time, x);
+    % ---- Optional decimation for very large meshes ----
+    maxPts = 400;                       % max grid points per axis
+    step_x = max(1, floor(length(x)    / maxPts));
+    step_t = max(1, floor(length(time) / maxPts));
+    x_d    = x(1:step_x:end);
+    t_d    = time(1:step_t:end);
+    eta_d  = eta_snap(1:step_x:end, 1:step_t:end);
+    q_d    = q_snap(1:step_x:end,   1:step_t:end);
+    [tt, xx] = meshgrid(t_d, x_d);
 
-    figure(3); clf;
-    
-    fs = 25;   % SAME font size as all other figures
-    
-    surf(tt, xx, eta_snap, 'EdgeColor', 'none');
-    grid on;
-    
-    xlabel('$t$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
-    
-    ylabel('$x$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
-    
-    zlabel('$\eta(x,t)$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
+    % ---------- Surface: eta ----------
+    fig2a = figure('Units','centimeters','Position',[2 2 30 20], ...
+                   'Color','w','PaperPositionMode','auto');
+    surf(tt, xx, eta_d, 'EdgeColor','none');
+    box on; grid on;
+    set(gca, 'GridLineStyle','-', 'GridAlpha',0.15);
+    colorbar;
 
-    title(sprintf('Surface plot of $\\eta$  with $\\Delta t=%.2f$\\,ms, $h=%.2f$', ...
-          Data.PicTime, Data.dt*1000, 1/Femregion.ne), ...
-          'Interpreter','latex', ...
-          'FontName','Times New Roman', ...
-          'FontSize',fs);
-    
-    
+    xlabel('$t$',          'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    ylabel('$x$',          'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    zlabel('$\eta(x,t)$',  'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    title(sprintf('Surface plot of $\\eta$ with $\\Delta t=%.2f$\\,ms, $h=%.2f$, $p=%g.$', ...
+          Data.dt*1000, 1/Femregion.ne, Data.p), ...
+          'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    set(gca, 'FontName',fnt, 'FontSize',fs-4, 'TickLabelInterpreter','latex');
+
     if Data.save_sol_images
         filename = sprintf('SurfacePlot_ETA_%s_nEL_%g_p_%g_dt_%g.pdf', ...
                            Data.name, Femregion.ne, Data.p, Data.dt);
-        exportgraphics(gcf, fullfile('Plots', filename), ...
-                       'ContentType','vector');
+        exportgraphics(fig2a, fullfile('Plots', filename), 'Resolution',300);
     end
 
+    % ---------- Surface: q ----------
+    fig2b = figure('Units','centimeters','Position',[2 2 30 20], ...
+                   'Color','w','PaperPositionMode','auto');
+    surf(tt, xx, q_d, 'EdgeColor','none');
+    box on; grid on;
+    set(gca, 'GridLineStyle','-', 'GridAlpha',0.15);
+    colorbar;
 
-    figure(4); clf;
+    xlabel('$t$',       'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    ylabel('$x$',       'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    zlabel('$q(x,t)$',  'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    title(sprintf('Surface plot of $q$ with $\\Delta t=%.2f$\\,ms, $h=%.2f$, $p=%g.$', ...
+          Data.dt*1000, 1/Femregion.ne, Data.p), ...
+          'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+    set(gca, 'FontName',fnt, 'FontSize',fs-4, 'TickLabelInterpreter','latex');
 
-    surf(tt, xx, q_snap, 'EdgeColor', 'none');
-    grid on;
-    
-    xlabel('$t$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
-    
-    ylabel('$x$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
-    
-    zlabel('$q(x,t)$', ...
-           'Interpreter','latex', ...
-           'FontName','Times New Roman', ...
-           'FontSize',fs);
-    
-    title(sprintf('Surface plot of $q$  with $\\Delta t=%.2f$\\,ms, $h=%.2f$', ...
-          Data.PicTime, Data.dt*1000, 1/Femregion.ne), ...
-          'Interpreter','latex', ...
-          'FontName','Times New Roman', ...
-          'FontSize',fs);
-    
     if Data.save_sol_images
         filename = sprintf('SurfacePlot_q_%s_nEL_%g_p_%g_dt_%g.pdf', ...
                            Data.name, Femregion.ne, Data.p, Data.dt);
-        exportgraphics(gcf, fullfile('Plots', filename), ...
-                       'ContentType','vector');
+        exportgraphics(fig2b, fullfile('Plots', filename), 'Resolution',1000);
     end
-
 end
 
 %==========================================================================

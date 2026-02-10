@@ -21,14 +21,14 @@ Data.save_sol_images = 1;  % 1 if you whant to save the sol plot
 Data.plot_matrixes = 1;
 
 % Number of modes to consider
-nmodes = 5;
+nmodes = 1;
 
 % number of elements on which calculate the different dispersion errors
 %nEl_min   = 1;        % coarsest mesh
 %nEl_max   = 1000;     % finest mesh
 %n_levels  = 100;      % number of elements
 %nEl_vec = unique( round( logspace(log10(nEl_min), log10(nEl_max), n_levels) ) );
-nEl_vec = [5 7 10 25 50 100 200 400 800 1600 3200];
+nEl_vec = [5 7 10 25 50 100 200 400 800 1600 3200 6400 12800];
 
 % Compute analytical k for each one of the modes
 n = (1:nmodes);

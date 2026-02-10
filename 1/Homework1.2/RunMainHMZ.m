@@ -20,7 +20,7 @@ Data.calc_errors = 1;  % 1 if you want to calc many for h and compute errors
 Data.save_sol_images = 1;  % 1 if you whant to save the sol plot
 
 %% number of element definition
-nEl = 80;                                       % Single sol calculation
+nEl = 10;                                       % Single sol calculation
 
 nEl_min   = 1;         % coarsest mesh
 nEl_max   = 1000;     % finest mesh
