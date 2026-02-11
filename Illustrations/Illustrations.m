@@ -54,7 +54,7 @@ for j = 1:Npts
 
     ci = clr(mod(j-1, size(clr,1)) + 1, :);
     plot(x_fine, phi, '-', 'LineWidth', lw, 'Color', ci);
-    leg_entries{j} = sprintf('$\\varphi_{%d}(x)$', j);
+    leg_entries{j} = sprintf('$\\varphi_{%d}(x)$', j-1);
 end
 
 hold off;
@@ -117,7 +117,7 @@ for p = 1:4
         ci = clr(mod(j-1, size(clr,1)) + 1, :);
         style = ls_basis{mod(j-1, length(ls_basis)) + 1};
         plot(xi_fine, lj, style, 'LineWidth', lw, 'Color', ci);
-        leg_p{j} = sprintf('$\\ell_{%d}(\\xi)$', j);
+        leg_p{j} = sprintf('$\\varphi_{%d}(\\xi)$', j);
     end
 
     % Mark GLL nodes on x-axis
@@ -130,7 +130,7 @@ for p = 1:4
 
     hold off;
     xlabel('$\xi$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-4);
-    ylabel('$\ell_j(\xi)$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-4);
+    ylabel('$\varphi_j(\xi)$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-4);
     title(sprintf('Degree $p = %d$ \\quad ($%d$ GLL nodes)', p, n_nodes), ...
           'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-4);
     xlim([-1.05 1.05]);

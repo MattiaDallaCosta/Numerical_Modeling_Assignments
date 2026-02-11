@@ -34,7 +34,8 @@ function PlotDisp(dispersion_ratio, h_over_lambda, nmodes, Data)
         plot(Hs, R(m,idx), '-o', ...
              'LineWidth',lw, 'MarkerSize',6, 'Color',ci);
     end
-    
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
     set(gca, 'XScale','log', 'YScale','log');
     
     xlabel('$h/\lambda$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);

@@ -99,7 +99,7 @@ elseif strcmp(TestName,'Homework2.5_2')
     Data.name = TestName;
 
     % Friction
-    Data.gamma = 0.5;
+    Data.gamma = 1;
 
     % Domain (0,L)
     Data.L = 1;       

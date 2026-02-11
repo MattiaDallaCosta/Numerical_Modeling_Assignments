@@ -11,18 +11,18 @@ addpath SemLib
 
 
 %% Data for Test
-Data = DataTest('Homework2.4');
+%Data = DataTest('Homework2.4');
 %Data = DataTest('Homework2.5_1');
-%Data = DataTest('Homework2.5_2');
+Data = DataTest('Homework2.5_2');
 
 % Polynomial degree 
-Data.p = 2;
+Data.p = 4;
 
 %% Options
-Data.surf = 0;            % solution in space-time domain (3d)
+Data.surf = 1;            % solution in space-time domain (3d)
 Data.snapshot = 0;        % movie of the solution
 Data.visual_graph = 0;    % solution at final time T
-Data.calc_errors = 1;     % error calculation
+Data.calc_errors = 0;     % error calculation
 Data.save_sol_images = 1; % Save image
 
 % Skip some steps in the video to make it go faster
