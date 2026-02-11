@@ -294,6 +294,222 @@ tit = sgtitle('Finite volume approximation', 'Interpreter','latex', 'FontSize',1
 % Export
 exportgraphics(fig, 'fvm_discretization.pdf', 'ContentType', 'vector');
 fprintf('Saved: fvm_discretization.pdf\n');
+%%
+%% Finite Volume + MC limiter (1 equation) figure
+
+% Parameters
+N = 10;                         % number of cells
+L = 1;                          % domain length
+dx = L / N;                     % cell width
+x_faces = linspace(0, L, N+1);  % cell interfaces x_{i-1/2}, x_{i+1/2}
+x_centers = 0.5*(x_faces(1:end-1) + x_faces(2:end)); % cell centers
+
+% Continuous function to approximate
+f = @(x) 0.15 + 0.6*exp(-12*(x - 0.35).^2) + 0.25*sin(2.5*pi*x);
+x_fine = linspace(0, L, 500);
+y_fine = f(x_fine);
+
+% Integral's cell averages
+u_avg = zeros(1, N);
+for i = 1:N
+    xq = linspace(x_faces(i), x_faces(i+1), 200);
+    u_avg(i) = trapz(xq, f(xq)) / dx;
+end
+
+% -------- MC LIMITER (scalar) --------
+% Compute limited slopes sigma_i (approx du/dx in each cell)
+sigma = zeros(1, N);
+
+for i = 2:N-1
+    d_fwd = (u_avg(i+1) - u_avg(i)) / dx;
+    d_bwd = (u_avg(i)   - u_avg(i-1)) / dx;
+
+    if d_bwd == 0
+        r = 0;
+    else
+        r = d_fwd / d_bwd;
+    end
+
+    phi = max(0, min([2*r, 2, (1 + r)/2]));   % MC limiter
+    sigma(i) = phi * d_bwd;
+end
+% boundaries: sigma(1)=sigma(N)=0 already (common simple choice)
+
+% Reconstructed interface states (i+1/2), i = 1..N-1
+uL = zeros(1, N-1); % u_{i+1/2}^-  from cell i
+uR = zeros(1, N-1); % u_{i+1/2}^+  from cell i+1
+for i = 1:N-1
+    uL(i) = u_avg(i)   + (dx/2) * sigma(i);
+    uR(i) = u_avg(i+1) - (dx/2) * sigma(i+1);
+end
+
+% Figure
+fig = figure();
+set(fig, 'Color', 'w');
+ax = axes('Position', [0.08 0.13 0.88 0.82]);
+hold on; box on; grid off;
+
+% Colors
+col_func   = [0.0 0.0 0.0];
+col_step   = [0.0 0.45 0.74];
+col_face   = [0.5 0.5 0.5];
+col_center = [0.85 0.33 0.10];
+
+col_recon  = [0.47 0.67 0.19];    % limited linear reconstruction
+col_uL     = [0.47 0.67 0.19];    % left state marker
+col_uR     = [0.47 0.67 0.19];    % right state marker
+
+% Draw cell averages as filled rectangles + step outline
+for i = 1:N
+    %patch([x_faces(i) x_faces(i+1) x_faces(i+1) x_faces(i)], ...
+    %      [0 0 u_avg(i) u_avg(i)], ...
+    %      col_step, 'FaceAlpha', 0.12, 'EdgeColor', 'none');
+    % --- Fill under MC-limited reconstruction ---
+    nsub = 80;
+    xs = linspace(x_faces(i), x_faces(i+1), nsub);
+    us = u_avg(i) + sigma(i) * (xs - x_centers(i));
+    
+    patch([xs fliplr(xs)], ...
+          [zeros(size(us)) fliplr(us)], ...
+          col_recon, ...
+          'FaceAlpha', 0.12, ...
+          'EdgeColor', 'none');
+
+    plot([x_faces(i) x_faces(i+1)], [u_avg(i) u_avg(i)], ...
+         '-', 'Color', col_step, 'LineWidth', 1.8);
+
+    if i > 1
+        plot([x_faces(i) x_faces(i)], [u_avg(i-1) u_avg(i)], ...
+             '-', 'Color', col_step, 'LineWidth', 1.8);
+    else
+        plot([x_faces(i) x_faces(i)], [0 u_avg(i)], ...
+             '-', 'Color', col_step, 'LineWidth', 1.8);
+    end
+end
+plot([x_faces(end) x_faces(end)], [0 u_avg(end)], ...
+     '-', 'Color', col_step, 'LineWidth', 1.8);
+
+% Plot continuous function
+plot(x_fine, y_fine, '-', 'Color', col_func, 'LineWidth', 2.0);
+
+% Cell interfaces (dashed vertical lines)
+for i = 1:N+1
+    plot([x_faces(i) x_faces(i)], [0 max(y_fine)*1.08], ...
+         '--', 'Color', col_face, 'LineWidth', 0.6);
+end
+
+% Grid points at cell centers (on x-axis)
+plot(x_centers, zeros(size(x_centers)), 'o', ...
+     'MarkerSize', 5, 'MarkerFaceColor', col_center, ...
+     'MarkerEdgeColor', col_center, 'LineWidth', 1.0);
+
+% Cell interface markers on x-axis
+plot(x_faces, zeros(size(x_faces)), '|', ...
+     'MarkerSize', 8, 'Color', col_face, 'LineWidth', 1.2);
+
+% -------- Plot limited piecewise-linear reconstruction --------
+% In each cell: u_i(x) = u_avg(i) + sigma(i)*(x - x_i)
+nsub = 60;
+for i = 1:N
+    xs = linspace(x_faces(i), x_faces(i+1), nsub);
+    us = u_avg(i) + sigma(i) * (xs - x_centers(i));
+    plot(xs, us, '-', 'Color', col_recon, 'LineWidth', 1.8);
+end
+
+% Plot interface reconstructed states as markers (at internal faces only)
+x_int = x_faces(2:end-1);  % faces i+1/2 for i=1..N-1
+plot(x_int, uL, 'o', 'MarkerSize', 5, 'MarkerFaceColor', col_uL, ...
+     'MarkerEdgeColor', col_uL, 'LineWidth', 1.0);
+plot(x_int, uR, 's', 'MarkerSize', 5, 'MarkerFaceColor', col_uR, ...
+     'MarkerEdgeColor', col_uR, 'LineWidth', 1.0);
+
+% Highlight one cell and show u^- and u^+ at its right interface
+i_highlight = 5;
+mid_x = x_centers(i_highlight);
+
+% Label highlighted cell average
+text(mid_x, u_avg(i_highlight) + 0.04, ['$\bar{u}_{', num2str(i_highlight), '}$'], ...
+     'Interpreter', 'latex', 'FontSize', 11, 'Color', col_step, ...
+     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
+
+% Label adjacent cell averages
+text(x_centers(i_highlight-1), u_avg(i_highlight-1) + 0.04, ...
+     ['$\bar{u}_{', num2str(i_highlight-1), '}$'], ...
+     'Interpreter', 'latex', 'FontSize', 10, 'Color', col_step, ...
+     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
+text(x_centers(i_highlight+1), u_avg(i_highlight+1) + 0.04, ...
+     ['$\bar{u}_{', num2str(i_highlight+1), '}$'], ...
+     'Interpreter', 'latex', 'FontSize', 10, 'Color', col_step, ...
+     'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom');
+
+% Label cell centers on x-axis
+for idx = [i_highlight-1, i_highlight, i_highlight+1]
+    text(x_centers(idx), -0.045, ['$x_{', num2str(idx), '}$'], ...
+         'Interpreter', 'latex', 'FontSize', 9, 'Color', col_center, ...
+         'HorizontalAlignment', 'center');
+end
+
+% Label cell interfaces around highlighted cell
+text(x_faces(i_highlight), -0.075, ['$x_{', num2str(i_highlight), '-\frac{1}{2}}$'], ...
+     'Interpreter', 'latex', 'FontSize', 9, 'Color', col_face, ...
+     'HorizontalAlignment', 'center');
+text(x_faces(i_highlight+1), -0.075, ['$x_{', num2str(i_highlight), '+\frac{1}{2}}$'], ...
+     'Interpreter', 'latex', 'FontSize', 9, 'Color', col_face, ...
+     'HorizontalAlignment', 'center');
+
+% Delta x brace
+y_brace = -0.11;
+plot([x_faces(i_highlight) x_faces(i_highlight+1)], [y_brace y_brace], ...
+     '-', 'Color', col_step, 'LineWidth', 1.2);
+plot([x_faces(i_highlight) x_faces(i_highlight)], [y_brace-0.01 y_brace+0.01], ...
+     '-', 'Color', col_step, 'LineWidth', 1.2);
+plot([x_faces(i_highlight+1) x_faces(i_highlight+1)], [y_brace-0.01 y_brace+0.01], ...
+     '-', 'Color', col_step, 'LineWidth', 1.2);
+text(mid_x, y_brace - 0.03, '$\Delta x$', ...
+     'Interpreter', 'latex', 'FontSize', 10, 'Color', col_step, ...
+     'HorizontalAlignment', 'center');
+
+% Annotate reconstructed states at interface i_highlight+1/2 (right face of highlighted cell)
+iface = i_highlight; % corresponds to x_{i+1/2} with i = i_highlight
+x_iface = x_faces(i_highlight+1);
+
+text(x_iface, uL(iface) + 0.03, ['$u^-_{', num2str(i_highlight),'+\frac{1}{2}}$'], ...
+     'Interpreter', 'latex', 'FontSize', 10, 'Color', col_uL, ...
+     'HorizontalAlignment', 'left', 'VerticalAlignment', 'bottom');
+
+text(x_iface, uR(iface) - 0.03, ['$u^+_{', num2str(i_highlight),'+\frac{1}{2}}$'], ...
+     'Interpreter', 'latex', 'FontSize', 10, 'Color', col_uR, ...
+     'HorizontalAlignment', 'left', 'VerticalAlignment', 'top');
+
+% Legend
+h1 = plot(NaN, NaN, '-', 'Color', col_func,  'LineWidth', 2.0);
+h2 = plot(NaN, NaN, '-', 'Color', col_step,  'LineWidth', 1.8);
+h3 = plot(NaN, NaN, '-', 'Color', col_recon, 'LineWidth', 1.8);
+h4 = plot(NaN, NaN, 'o', 'MarkerSize', 5, 'MarkerFaceColor', col_uL, ...
+     'MarkerEdgeColor', col_uL);
+h5 = plot(NaN, NaN, 's', 'MarkerSize', 5, 'MarkerFaceColor', col_uR, ...
+     'MarkerEdgeColor', col_uR);
+h6 = plot(NaN, NaN, 'o', 'MarkerSize', 5, 'MarkerFaceColor', col_center, ...
+     'MarkerEdgeColor', col_center);
+
+legend([h1 h2 h3 h4 h5 h6], ...
+       {'$u(x)$', '$\bar{u}_i$ (cell average)', 'MC-limited reconstruction', ...
+        '$u^-_{i+\frac{1}{2}}$', '$u^+_{i+\frac{1}{2}}$', 'Grid points'}, ...
+       'Interpreter', 'latex', 'FontSize', 14, 'Location', 'best', 'Box', 'on');
+
+% Axes
+set(ax, 'FontSize', 10, 'TickLabelInterpreter', 'latex');
+xlabel('$x$', 'Interpreter', 'latex', 'FontSize', 12);
+ylabel('$u$', 'Interpreter', 'latex', 'FontSize', 12);
+xlim([-0.02 L+0.02]);
+ylim([-0.16 max(y_fine)*1.15]);
+
+set(ax, 'Position', [0.08 0.13 0.88 0.78]);
+sgtitle('Finite volume approximation with MC limiter', 'Interpreter','latex', 'FontSize',16);
+
+% Export
+exportgraphics(fig, 'fvm_discretization_MC.pdf', 'ContentType', 'vector');
+fprintf('Saved: fvm_discretization_MC.pdf\n');
 
 %% Comparison: Standard vs Logarithmic Flux
 
