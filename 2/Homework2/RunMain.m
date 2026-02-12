@@ -20,10 +20,10 @@ Data.p = 4;
 
 %% Options
 Data.surf = 0;            % solution in space-time domain (3d)
-Data.snapshot = 1;        % movie of the solution
-Data.visual_graph = 0;    % solution at final time T
+Data.snapshot = 0;        % movie of the solution
+Data.visual_graph = 1;    % solution at final time T
 Data.calc_errors = 0;     % error calculation
-Data.save_sol_images = 1; % Save image
+Data.save_sol_images = 0; % Save image
 
 % Skip some steps in the video to make it go faster
 if (Data.snapshot)
