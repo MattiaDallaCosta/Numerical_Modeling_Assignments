@@ -195,47 +195,146 @@ if Data.snapshot
     end
 end
 
-% if Data.snapshot
-% 
-%     %======================================================================
-%     % VIDEO SETUP
-%     %======================================================================
-% 
-%     outFolder = 'Plots';
-%     if ~exist(outFolder, 'dir')
-%         mkdir(outFolder);
-%     end
-% 
-%     videoFile = fullfile(outFolder, [Data.name, '.mp4']);
-% 
-%     v = VideoWriter(videoFile, 'MPEG-4');
-%     v.FrameRate = 30;          % playback speed
-%     open(v);
-% 
-%     %======================================================================
-%     % SNAPSHOT / MOVIE LOOP
-%     %======================================================================
-% 
-%     for k = 1:Data.frameSkip:size(eta_snap,2)
-% 
-%         t = (k-1) * Data.dt;
-% 
-%         Snapshot(Femregion, eta_snap(:,k), q_snap(:,k), Data, t);
-% 
-%         drawnow;
-% 
-%         % Capture and write frame
-%         frame = getframe(gcf);
-%         writeVideo(v, frame);
-% 
-%     end
-% 
-%     %======================================================================
-%     % FINALIZE VIDEO
-%     %======================================================================
-% 
-%     close(v);
-% end
+%======================================================================
+% VIDEO: Wave evolution over time (eta & q)
+%======================================================================
+x_ex = linspace(Data.domain(1),Data.domain(2),1000);
+if Data.snapshot
+
+    % ---------------------------
+    % Video parameters
+    % ---------------------------
+    vid_fps  = 30;
+
+    % If user provided a duration, use it; otherwise infer from T
+    if isfield(Data,'vid_dur') && ~isempty(Data.vid_dur)
+        vid_dur = Data.vid_dur;                 % seconds
+    else
+        vid_dur = min(10, max(2, Data.T));      % fallback (2–10 s)
+    end
+
+    n_frames = max(1, round(vid_fps * vid_dur));
+
+    % Frame picking from available time history (use Data.frameSkip if present)
+    Nt = size(eta_snap, 2);
+
+    % If you want to respect Data.frameSkip first, build an "available list"
+    if isfield(Data,'frameSkip') && Data.frameSkip > 0
+        avail = 1:Data.frameSkip:Nt;
+    else
+        avail = 1:Nt;
+    end
+
+    % Now pick n_frames evenly spaced indices from avail
+    idx = round(linspace(1, numel(avail), min(n_frames, numel(avail))));
+    idx = avail(idx);
+
+    % Avoid duplicates just in case
+    idx = unique(idx, 'stable');
+    n_frames = numel(idx);
+
+    % ---------------------------
+    % Axes limits (fixed)
+    % ---------------------------
+    eta_min_plot = min(eta_snap(:)) - 0.02;
+    eta_max_plot = max(eta_snap(:)) + 0.02;
+    q_min_plot   = min(q_snap(:))   - 0.02;
+    q_max_plot   = max(q_snap(:))   + 0.02;
+
+    % ---------------------------
+    % Output folder and filename
+    % ---------------------------
+    outFolder = 'Plots';
+    if ~exist(outFolder, 'dir')
+        mkdir(outFolder);
+    end
+
+    % Add discretization info in filename (optional)
+    vid_name = fullfile(outFolder, sprintf('%s_nEl_%d_p_%d_dt_%g.mp4', ...
+                    Data.name, Femregion.ne, Data.p, Data.dt));
+
+    v = VideoWriter(vid_name, 'MPEG-4');
+    v.FrameRate = vid_fps;
+    v.Quality   = 95;
+    open(v);
+
+    % ---------------------------
+    % Styling (reuse your globals below if you prefer)
+    % ---------------------------
+    fs         = 28;
+    lw         = 2.0;
+    fnt        = 'Times New Roman';
+    interp_tex = 'latex';
+
+    x = Femregion.coord(:,1);
+    if strcmp(Data.boundary,'PP')
+        % periodic reduction has size N already, x must match snapshots
+        if length(x) ~= size(eta_snap,1)
+            x = x(1:size(eta_snap,1));
+        end
+    else
+        if length(x) ~= size(eta_snap,1)
+            x = x(1:size(eta_snap,1));
+        end
+    end
+
+    % Domain limits
+    xL = min(x);
+    xR = max(x);
+
+    % Info string (title suffix)
+    info_str = sprintf('$nEl=%d$, $p=%d$, $\\Delta t=%.3f$ ms, $T=%.2f$ s', ...
+                       Femregion.ne, Data.p, Data.dt*1000, Data.T);
+
+    fig = figure('Units','pixels','Position',[100 100 1280 720], ...
+                 'Color','w','Visible','off');
+
+    % ---------------------------
+    % Frame loop
+    % ---------------------------
+    for kk = 1:n_frames
+        k = idx(kk);
+        t = (k-1) * Data.dt;
+
+        % ---- eta(x,t) ----
+        subplot(2,1,1); cla; hold on;
+        plot(x, eta_snap(:,k), '-', 'LineWidth', lw);
+        plot(x_ex, Data.etaex(x_ex,t), '--', 'LineWidth', lw);
+        legend('$\eta_h$','$\eta_{ex}$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        %legend('$\eta_h$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        hold off; grid on;
+        xlim([xL, xR]);
+        ylim([eta_min_plot, eta_max_plot]);
+        title(sprintf('Linearized SWE. $\\eta(x,t)$ at $t=%.3f$ s \\quad [%s]', t, info_str), ...
+              'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-2);
+        xlabel('$x$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        ylabel('$\eta$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        set(gca, 'FontName',fnt, 'FontSize',fs-6, 'TickLabelInterpreter','latex');
+
+        % ---- q(x,t) ----
+        subplot(2,1,2); cla; hold on;
+        plot(x, q_snap(:,k), '-', 'LineWidth', lw);
+        plot(x_ex, Data.qex(x_ex,t), '--', 'LineWidth', lw);
+        hold off; grid on;
+        xlim([xL, xR]);
+        ylim([q_min_plot, q_max_plot]);
+        title(sprintf('$q(x,t)$ at $t=%.3f$ s', t), ...
+              'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs-2);
+        legend('$q_h$','$q_{ex}$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        %legend('$q_h$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        xlabel('$x$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        ylabel('$q$', 'Interpreter',interp_tex, 'FontName',fnt, 'FontSize',fs);
+        set(gca, 'FontName',fnt, 'FontSize',fs-6, 'TickLabelInterpreter','latex');
+
+        drawnow;
+        frame = getframe(fig);
+        writeVideo(v, frame);
+    end
+
+    close(v);
+    close(fig);
+    fprintf('Video saved: %s\n', vid_name);
+end
 
 % Solution at certaint time
 Solutions = PostProcessing(Data, Femregion, eta_snap(:,round(Data.PicTime/Data.dt)), q_snap(:,round(Data.PicTime/Data.dt)));

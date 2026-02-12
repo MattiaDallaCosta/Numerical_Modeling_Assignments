@@ -11,16 +11,16 @@ addpath SemLib
 
 
 %% Data for Test
-%Data = DataTest('Homework2.4');
+Data = DataTest('Homework2.4');
 %Data = DataTest('Homework2.5_1');
-Data = DataTest('Homework2.5_2');
+%Data = DataTest('Homework2.5_2');
 
 % Polynomial degree 
 Data.p = 4;
 
 %% Options
-Data.surf = 1;            % solution in space-time domain (3d)
-Data.snapshot = 0;        % movie of the solution
+Data.surf = 0;            % solution in space-time domain (3d)
+Data.snapshot = 1;        % movie of the solution
 Data.visual_graph = 0;    % solution at final time T
 Data.calc_errors = 0;     % error calculation
 Data.save_sol_images = 1; % Save image
@@ -33,12 +33,13 @@ end
 % The following is both the time at which shows the sol and computes the
 % error
 Data.PicTime = 0.5;
+Data.vid_dur = 5;
 
 %% No error case
 % Input: Data and number of elements
 % Output: error, solution, fem and data structure
 if not (Data.calc_errors)
-    nEl = 10;
+    nEl = 30;
     [err,sol,fem,D] = Main(Data,nEl);
 end
     

@@ -347,7 +347,6 @@ end
 
 fprintf('\n=== All plots saved to Plots/ folder ===\n');
 
-
 %% VIDEO: Wave evolution over time
 if VideoSol
     vid_fps   = 30;

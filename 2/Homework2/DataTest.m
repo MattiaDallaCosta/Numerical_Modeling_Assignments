@@ -21,7 +21,7 @@ if strcmp(TestName,'Homework2.4')
 
     % Final time and time step
     Data.T  = 0.5;
-    Data.dt = 0.0001;
+    Data.dt = 0.00005;
 
     % Parameters
     Data.g  = 9.81;
@@ -64,7 +64,7 @@ elseif strcmp(TestName,'Homework2.5_1')
 
     % Final time and time step
     Data.T  = 0.5;
-    Data.dt = 0.0001;
+    Data.dt = 0.00005;
 
     % Polynomial degree
     Data.p = 4;
@@ -112,7 +112,7 @@ elseif strcmp(TestName,'Homework2.5_2')
 
     % Final time and time step
     Data.T  = 0.5;
-    Data.dt = 0.0001;
+    Data.dt = 0.00001;
 
     % --- Parameters to match eta_tt = gH eta_xx ---
     Data.g  = 9.81;
